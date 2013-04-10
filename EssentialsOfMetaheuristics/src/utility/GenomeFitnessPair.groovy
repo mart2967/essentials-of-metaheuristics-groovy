@@ -7,9 +7,9 @@ class GenomeFitnessPair implements Comparable{
 
 	//This is set so that default sort methods will return the pairs sorted in descending order by fitness
 	public int compareTo(pair2) {
-		if (this.fitness > pair2.fitness){
+		if (this.fitness < pair2.fitness){
 			-1
-		} else if (this.fitness < pair2.fitness) {
+		} else if (this.fitness > pair2.fitness) {
 			1
 		} else {
 			0
@@ -19,4 +19,9 @@ class GenomeFitnessPair implements Comparable{
 	public String toString() {
 		return "<${fitness}, ${genome}>"
 	}
+    
+        public GenomeFitnessPair clone() {
+            return new GenomeFitnessPair(genome: this.genome, fitness: this.fitness)
+            
+        }
 }

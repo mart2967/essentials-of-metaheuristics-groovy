@@ -1,5 +1,5 @@
 package populationMethods
-import problems.OnesMax
+import utility.GenomeFitnessPair
 
 class MuPlusLambdaES {
     Integer numParents = 2
@@ -12,25 +12,26 @@ class MuPlusLambdaES {
         def individualArr = []
 
         numChildren.times {
-            individualArr.add(problem.random())
+            def p = problem.random()
+            def q = problem.quality(p)
+            individualArr.add(new GenomeFitnessPair(genome: p, fitness: q))
         }
 
         def best = individualArr[0]
-        def bestQuality = problem.quality(best)
 
-        while(!problem.terminate(best, bestQuality)) {
+        while(!problem.terminate(best) ){
             for (individual in individualArr) {
-                if (problem.quality(individual) > bestQuality) {
+                if (individual.compareTo(best) > 0) {
                     best = individual
-                    bestQuality = problem.quality(best)
                 }
             }
 
-            individualArr = individualArr.sort{problem.quality(it)}.reverse()[0..<numParents]
+            individualArr = individualArr.sort{it.fitness}.reverse()[0..<numParents]
 
             for (i in 0..<numParents) {
                 for (j in 0..<(numChildren / numParents)) {
-                    individualArr.add(problem.tweak(problem.copy(individualArr.get(i))))
+                    def newProblem = problem.tweak(problem.copy(individualArr.get(i).genome))
+                    individualArr.add( new GenomeFitnessPair(genome: newProblem, fitness: problem.quality(newProblem) ) )
                 }
             }
 

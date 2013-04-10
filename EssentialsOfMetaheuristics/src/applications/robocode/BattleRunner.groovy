@@ -54,7 +54,7 @@ class BattleRunner {
     
     def linkJarFile(id) {
         def robotDir = new File("${userHome}/robocode/robots/")
-        def command = "ln -s ${robotDirectoryAbsolute}/Individual_${id}.jar ."
+        def command = "ln -s -f ${robotDirectoryAbsolute}/Individual_${id}.jar ."
         def proc = command.execute(null, robotDir)
         proc.waitFor()
         assert proc.exitValue() == 0

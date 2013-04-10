@@ -1,0 +1,212 @@
+   package evolved;
+   import robocode.*;
+   import robocode.util.*;
+   import java.awt.geom.*;
+   import java.util.*;
+   import java.awt.*;
+
+/*
+*Toorkild - a second attempt at multiple-choice pattern-matching by Skilgannon (Julian Kent)
+*Special features:
+** never finds the same 'match' twice, even with different key-lengths
+** weights the multiple choice depending on the match length
+** finds up to 30 different matches
+** matches on lateral velocity and advancing velocity
+** still manages to fit in Waylander's strong StopAndGo/Random multi-movement
+*/
+
+
+    public class Individual_${id} extends AdvancedRobot
+   {
+   
+   
+      static final int BINS = 255;// full 360 degrees of bins - not just in the reachable range
+      static final int MAX_MATCHES = 50;
+      
+      // static final char ROUND_BREAK = ((char)(((-127)<<8)|(0xFF&((byte)(-127)))));
+   
+   
+      static StringBuilder searchData = new StringBuilder();
+   //    , playData = new StringBuilder();
+      static double bulletVelocity;
+      static double direction = 1;
+      static double lastEnemyEnergy;
+      static boolean flat;
+      // static double enemyHits;
+   	
+       public void run() {
+         
+      	//NOT NECESSARY FOR 35 ROUND BATTLES - CAN BE REMOVED FOR 15 EXTRA CODESIZE
+         // try{
+            // staticData.delete(60000, 80000);
+         // }
+             // catch(Exception e){}
+         // staticData.insert(0,ROUND_BREAK);
+             
+         setAdjustRadarForGunTurn(true);
+         //setAdjustRadarForRobotTurn(true); -- redundant
+         setAdjustGunForRobotTurn(true);
+         
+         while(true){
+            turnRadarRight(Double.POSITIVE_INFINITY);
+         }
+      	
+      }
+   
+   
+       public void onScannedRobot(ScannedRobotEvent e) {
+         
+         StringBuilder data = searchData;
+         double eOffset;
+         double absbearing=e.getBearingRadians()+ getHeadingRadians();
+         
+         double eDistance ;
+         boolean rammer = (eDistance = e.getDistance()) < ${ramDistance};  // || getTime() < 20; 
+          
+      //movement
+         double goAngle;
+         eOffset =( Math.PI/2 + 1*0.8) - eDistance*(0.8/600);
+         
+         while(! new Rectangle2D.Double(18,18,764,564).
+         contains(getX() + 160 * Math.sin(goAngle = absbearing + direction * (eOffset -= .02)), getY() + 160 * Math.cos(goAngle))
+         );
+      
+         
+         if((flat && !rammer && 
+         Math.random() <  0.6*Math.sqrt(bulletVelocity/eDistance) - 0.04
+         ) || 
+          eOffset < Math.PI/4 ) {
+            direction = -direction;
+         }
+         setTurnRightRadians(Math.tan(goAngle -= getHeadingRadians()));
+         
+         eOffset = (lastEnemyEnergy - (lastEnemyEnergy = e.getEnergy()));
+         
+         if((0  < eOffset && eOffset <= 3) || flat || rammer){
+            setAhead((((3 + (int)(eOffset*1.999999)) << 3 ) + 3*(int)(1.25000001 - eOffset/2))
+               * Math.signum(Math.cos(goAngle)));
+         }
+         
+      	// MOVEMENT   
+      	
+      	
+      	// GUN 
+         
+         // data.insert(0,(char)Math.round(e.getVelocity()*Math.sin(eOffset)))
+            //    .insert(0,(char)(Math.round(e.getVelocity()*Math.cos(eOffset))));
+            
+      ////BITSHIFTING to fit multiple numbers in one character
+         
+         // playData.insert(0,mergeData(goAngle = e.getVelocity()*Math.sin(eOffset = e.getHeadingRadians()- absbearing),
+            // eOffset = e.getVelocity()*Math.cos(eOffset)));
+            
+      		//searchData - this is where weighting is applied
+         // data.insert(0,mergeData(goAngle/2, eOffset/2));
+      	
+         data.insert(0,(char)(((int)Math.round(e.getVelocity()*Math.sin(eOffset = e.getHeadingRadians()- absbearing))<<8)|
+            (0XFF&((byte)Math.round(e.getVelocity()*Math.cos(eOffset))))));
+            
+         
+         double bulletPower;
+         setFire(bulletPower = rammer?2.99:Math.min(1.99,Math.min(lastEnemyEnergy/4,getEnergy()/8)));
+      
+         int keyLength = Math.min(data.length(),66);
+         int indexSize = 0;
+         int[] index = new int[MAX_MATCHES];
+         int tempIndex = 0;
+         int[] bins = new int[BINS]; 
+         try{
+            do{
+               do{
+                  if( tempIndex < 0 )
+                     keyLength= keyLength*3/4;
+                     // keyLength/=2;
+               
+                  tempIndex = data.indexOf(
+                     data.substring(0, keyLength),Math.max(((int)eDistance)/11,tempIndex + 1));
+               
+               }while((tempIndex < 0  || Arrays.binarySearch(index,tempIndex) >= 0) && keyLength > 0);	
+               if(keyLength == 0)
+                  break;
+               int iterateIndex = index[index.length - ++indexSize] = tempIndex;
+               Arrays.sort(index);
+               double db=0;
+               eOffset = Math.PI;
+               goAngle = eDistance;
+               // char comboChar = 0;
+               try{
+                  do
+                  {
+                  
+                     // comboChar = playData.charAt(iterateIndex--);
+                     char comboChar = data.charAt(iterateIndex--);
+                     // if(comboChar == ROUND_BREAK)
+                        // break;  
+                  
+                     eOffset += (byte)(comboChar>>8)/
+                        (goAngle += (byte)(comboChar&0XFF));    
+                  
+                  
+                  }while ((db+=Rules.getBulletSpeed(bulletPower)) < goAngle ); 
+               }
+                   catch(Exception ex){}
+                   
+               // if(comboChar != ROUND_BREAK)
+               iterateIndex = 0;
+               eOffset = Utils.normalAbsoluteAngle(eOffset)*((BINS - 1)/(2*Math.PI));
+               try{
+                  while(true){
+                     bins[iterateIndex++] += keyLength/(1 + Math.abs(iterateIndex - eOffset));
+                  }
+               }	
+                   catch(Exception ex){}
+            
+            }while(true);
+         }
+             catch( Exception ex){}
+                      
+         
+         keyLength = 0;
+         tempIndex = (BINS - 1)/2;
+         try{
+            while(true){
+               if(bins[++keyLength] > bins[tempIndex])
+                  tempIndex = keyLength;
+            }
+            
+         }
+             catch(Exception ex){}
+            
+         setTurnGunRightRadians(Utils.normalRelativeAngle(absbearing 
+            - (Math.PI + 0.0005)
+            + tempIndex*(2*Math.PI/(BINS - 1)) - getGunHeadingRadians()));
+         
+         setTurnRadarRightRadians(Utils.normalRelativeAngle(absbearing - getRadarHeadingRadians())*2);
+      	
+         // gun 
+      
+      }
+       // static  char mergeData(double a, double b){
+         // return (char)((  ((int)Math.round(a))<<8)  |  (0XFF&((byte)(Math.round(b)))));
+      // }
+   	
+       public void onHitByBullet(HitByBulletEvent e){
+         lastEnemyEnergy += 20 - (bulletVelocity = e.getVelocity());	
+         
+         // if(getRoundNum() < 5)
+         // flat = (int)(enemyHits+= e.getPower()) > (getRoundNum() + 2)*2;
+            
+         // if(getRoundNum() < 3)
+            //  System.out.println(enemyHits);
+      }
+       public void onDeath(DeathEvent e){
+         if(getRoundNum() < 4)
+            flat = true;
+      }
+   
+       public void onBulletHit(BulletHitEvent e){
+         lastEnemyEnergy -= Rules.getBulletDamage(e.getBullet().getPower());
+         
+      }
+     
+   }
