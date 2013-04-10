@@ -61,11 +61,11 @@
          double absbearing=e.getBearingRadians()+ getHeadingRadians();
          
          double eDistance ;
-         boolean rammer = (eDistance = e.getDistance()) < ${ramDistance};  // || getTime() < 20; 
+         boolean rammer = (eDistance = e.getDistance()) < 100;  // || getTime() < 20; 
           
       //movement
          double goAngle;
-         eOffset =( Math.PI/2 + 1*0.8) - eDistance*(0.8/600);
+         eOffset =( Math.PI/2 + 1*${offsetModifier}) - eDistance*(${offsetModifier}/600);
          
          while(! new Rectangle2D.Double(18,18,764,564).
          contains(getX() + 160 * Math.sin(goAngle = absbearing + direction * (eOffset -= .02)), getY() + 160 * Math.cos(goAngle))

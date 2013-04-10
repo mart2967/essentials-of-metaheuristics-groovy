@@ -5,13 +5,13 @@ import populationMethods.MuPlusLambdaES
 
 class RoboCodeExperimentRunner {
 
-    static runExperiment(searchers, problems, numRuns = 10) {
+    static runExperiment(searchers, problems, numRuns = 1) {
         for (p in problems) {
             for (s in searchers) {
                 for (i in 0..<numRuns) {
                     p.evalCount = 0
                     def result = s.maximize(p)
-                    println "${s.toString()}\t${p.toString()}\t${p.quality(result)}\t${result}"
+                    println "${s.toString()}\t${p.toString()}\t${result.fitness}\t${result.genome}"
                 }
             }
         }
@@ -20,6 +20,7 @@ class RoboCodeExperimentRunner {
     static main(args) {
         def searchers = [
             new MuPlusLambdaES()
+            
         ]
         def problems = [
             new RobocodeProblem()
