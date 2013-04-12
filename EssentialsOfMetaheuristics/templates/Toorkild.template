@@ -61,7 +61,7 @@
          double absbearing=e.getBearingRadians()+ getHeadingRadians();
          
          double eDistance ;
-         boolean rammer = (eDistance = e.getDistance()) < 100;  // || getTime() < 20; 
+         boolean rammer = (eDistance = e.getDistance()) < ${ramDistance};  // || getTime() < 20; 
           
       //movement
          double goAngle;

@@ -18,7 +18,7 @@ class RobocodeProblem {
     def random() {
         individualCount++
         ['id' : individualCount,
-            //'ramDistance' : 100 + random.nextGaussian()*STDEV,
+            'ramDistance' : 100 + random.nextGaussian()*30,
             'offsetModifier': 0.8 + random.nextGaussian()]
     }
     
@@ -27,7 +27,7 @@ class RobocodeProblem {
         robotBuilder.buildJarFile(individual)
         battleRunner.buildBattleFile(individual['id'])
         def score = battleRunner.runBattle(individual['id'])
-        println "quality of individual ${individual['id']}: ${score}" + individual
+        println "quality of individual ${individual['id']}: ${score} data: " + individual
         return score
     }
     
@@ -39,7 +39,8 @@ class RobocodeProblem {
         individualCount++
         println 'tweaking'
         ['id' : individualCount,
-            'offsetModifier': 0.8 + random.nextGaussian()]
+            'ramDistance': individual['ramDistance'] + random.nextGaussian()*15,
+            'offsetModifier': individual['ramDistance'] + random.nextGaussian()/2]
     }
     
     def terminate(bestIndividualGFPair) {
