@@ -6,7 +6,7 @@ class RobocodeProblem {
     RobotBuilder robotBuilder = new RobotBuilder("templates/Toorkild.template")
     BattleRunner battleRunner = new BattleRunner("templates/battle.template")
     protected random = new java.util.Random()
-    Integer individualCount = 10322
+    Integer individualCount = 0
     Integer evalCount = 0
     Integer maxIterations = 100
     public static final STDEV = 10
