@@ -4,6 +4,7 @@
    import java.awt.geom.*;
    import java.util.*;
    import java.awt.*;
+   import java.awt.Color;
 
 /*
 *Toorkild - a second attempt at multiple-choice pattern-matching by Skilgannon (Julian Kent)
@@ -16,7 +17,7 @@
 */
 
 
-    public class Individual_${id} extends AdvancedRobot
+    public class HypeMachine_${id} extends AdvancedRobot
    {
    
    
@@ -35,7 +36,7 @@
       // static double enemyHits;
    	
        public void run() {
-         
+         setColors(Color.black, Color.red, Color.gray);
       	//NOT NECESSARY FOR 35 ROUND BATTLES - CAN BE REMOVED FOR 15 EXTRA CODESIZE
          // try{
             // staticData.delete(60000, 80000);
@@ -67,7 +68,7 @@
          double goAngle;
          eOffset =( Math.PI/2 + 1*${offsetModifier}) - eDistance*(${offsetModifier}/600);
          
-         while(! new Rectangle2D.Double(18,18,764,564).
+         while(! new Rectangle2D.Double(18,18,getBattleFieldWidth()-36, getBattleFieldHeight()-36).
          contains(getX() + 160 * Math.sin(goAngle = absbearing + direction * (eOffset -= .02)), getY() + 160 * Math.cos(goAngle))
          );
       
@@ -108,7 +109,7 @@
             
          
          double bulletPower;
-         setFire(bulletPower = rammer?2.99:Math.min(1.99,Math.min(lastEnemyEnergy/4,getEnergy()/8)));
+         setFire(bulletPower = rammer?2.99:Math.min(1.99,Math.min(lastEnemyEnergy/${bulletP},getEnergy()/${bulletP}*2)));
       
          int keyLength = Math.min(data.length(),66);
          int indexSize = 0;
@@ -178,7 +179,7 @@
              catch(Exception ex){}
             
          setTurnGunRightRadians(Utils.normalRelativeAngle(absbearing 
-            - (Math.PI + 0.0005)
+            - (Math.PI + ${gunAdjust})
             + tempIndex*(2*Math.PI/(BINS - 1)) - getGunHeadingRadians()));
          
          setTurnRadarRightRadians(Utils.normalRelativeAngle(absbearing - getRadarHeadingRadians())*2);

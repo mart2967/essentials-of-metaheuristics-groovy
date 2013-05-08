@@ -39,10 +39,10 @@ class BattleRunner {
         def lines = proc.in.text.split("\n")
         def result = false
         lines.each { line ->
-            def pattern = ~/evolved\.Individual_${id}\s+(\d+)/
+            def pattern = ~/evolved\.HypeMachine_${id}\s+(\d+)\s+\((\d+)%\)/
             def m = (line =~ pattern)
             if (m) {
-                result = Integer.parseInt(m[0][1])
+                result = Integer.parseInt(m[0][2])
             }
         }
         if (result) {
@@ -54,7 +54,7 @@ class BattleRunner {
     
     def linkJarFile(id) {
         def robotDir = new File("${userHome}/robocode/robots/")
-        def command = "ln -s -f ${robotDirectoryAbsolute}/Individual_${id}.jar ."
+        def command = "ln -s -f ${robotDirectoryAbsolute}/HypeMachine_${id}.jar ."
         def proc = command.execute(null, robotDir)
         proc.waitFor()
         assert proc.exitValue() == 0

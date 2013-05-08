@@ -5,7 +5,8 @@ import groovy.text.SimpleTemplateEngine
 class RobotBuilder {
     def template
     def robotDirectory = "evolved_robots"
-	def robotPackage = "evolved"
+    def robotPackage = "evolved"
+    def robotName = "HypeMachine"
     
     def RobotBuilder(String templateFileName) {
         def engine = new SimpleTemplateEngine()
@@ -16,7 +17,8 @@ class RobotBuilder {
         buildClassFile(values)
         buildPropertiesFile(values)
         def id = values['id']
-        def fileNamePrefix = "Individual_${id}"
+        
+        def fileNamePrefix = "${robotName}_${id}"
         def command = "jar -cf ${fileNamePrefix}.jar"
         [".java", ".class", ".properties"].each { suffix ->
             command += " ${robotPackage}/${fileNamePrefix}${suffix}"
@@ -30,7 +32,7 @@ class RobotBuilder {
     
     def buildPropertiesFile(values) {
         def id = values['id']
-        def filenamePrefix = "Individual_${id}"
+        def filenamePrefix = "${robotName}_${id}"
         def propertiesFileName = "${filenamePrefix}.properties"
         def propertiesFile = new File("${robotDirectory}/${robotPackage}/${propertiesFileName}")
         propertiesFile << "robots: ${robotPackage}/${filenamePrefix}.class"
@@ -57,7 +59,7 @@ class RobotBuilder {
     
     def makeJavaFileName(values) {
         def id = values['id']
-        def filename = "Individual_${id}.java"
+        def filename = "${robotName}_${id}.java"
     }
 
     private File createFile(javaFileName) {
